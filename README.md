@@ -30,12 +30,7 @@ b'xn--eckwd4c7c.xn--zckzah'
 ```
 
 Conversions can be applied at a per-label basis using the `ulabel` or
-`alabel` functions if necessary:
-
-```pycon
->>> idna.alabel('测试')
-b'xn--0zwm56d'
-```
+`alabel` functions for specialized use cases.
 
 
 ### Compatibility Mapping (UTS #46)
