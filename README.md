@@ -7,14 +7,10 @@ supersedes the standard library's `encodings.idna`, which only
 implements the 2003 specification, offering broader script coverage and
 limiting domains with known security vulnerabilities.
 
-Available from [PyPI](https://pypi.org/project/idna/), for example:
-
-```bash
-$ python3 -m pip install idna
-```
-
-
 ## Usage
+
+Package may be installed from [PyPI](https://pypi.org/project/idna/) via
+the typical methods (e.g. `python3 -m pip install idna`)
 
 For typical usage, the `encode` and `decode` functions will take a
 domain name argument and perform a conversion to ASCII-compatible encoding
