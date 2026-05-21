@@ -83,6 +83,58 @@ königsgäßchen
 ```
 
 
+## Command-line tool
+
+The package supports command-line usage to convert domain names
+between their Unicode and ASCII-compatible forms. It can be run either
+as a module (`python3 -m idna`) or, once installed (such as with `uv
+tool` or `pipx`), via the `idna` script:
+
+```bash
+$ uv tool install idna
+$ idna xn--e1afmkfd.xn--p1ai
+пример.рф
+$ idna пример.рф
+xn--e1afmkfd.xn--p1ai
+```
+
+With no mode flag the direction is chosen automatically: inputs
+containing an `xn--` label are decoded, anything else is encoded. Pass
+`-e`/`--encode` or `-d`/`--decode` to force a specific direction.
+
+Multiple domains may be supplied at once, either as positional
+arguments or by piping one domain per line on standard input:
+
+```bash
+$ idna пример.рф παράδειγμα
+xn--e1afmkfd.xn--p1ai
+xn--hxajbheg2az3al
+$ cat domainlist.txt | idna
+```
+
+When more than one domain is supplied without a mode flag, the
+direction is picked from the first input and that mode is applied to
+every remaining input, so a stream of A-labels all decode and a stream
+of U-labels all encode. Pass `-e`/`--encode` or `-d`/`--decode` to
+override the heuristic if the first input is ambiguous.
+
+UTS #46 mapping is applied by default, which lets the tool accept
+inputs that aren't strictly valid IDNA 2008 — such as uppercase
+letters — by normalising them first:
+
+```bash
+$ idna ΠΑΡΆΔΕΙΓΜΑ.ΕΛ
+xn--hxajbheg2az3al.xn--qxam
+```
+
+Pass `--strict` to disable UTS #46 and apply IDNA 2008 rules verbatim;
+the same input will then be rejected.
+
+Conversion failures are reported on stderr together with the
+offending input; processing continues with the remaining domains and
+the tool exits with a non-zero status if any conversion failed.
+
+
 ## Exceptions
 
 All errors raised during the conversion following the specification
