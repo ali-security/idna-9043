@@ -279,7 +279,7 @@ def valid_contexto(label: str, pos: int, exception: bool = False) -> bool:
             return _is_script(label[pos + 1], "Greek")
         return False
 
-    if cp_value == 0x05F3 or cp_value == 0x05F4:
+    if cp_value in {0x05F3, 0x05F4}:
         if pos > 0:
             return _is_script(label[pos - 1], "Hebrew")
         return False
@@ -369,12 +369,13 @@ def alabel(label: str) -> bytes:
     """
     try:
         label_bytes = label.encode("ascii")
+    except UnicodeEncodeError:
+        pass
+    else:
         ulabel(label_bytes)
         if not valid_label_length(label_bytes):
             raise IDNAError("Label too long")
         return label_bytes
-    except UnicodeEncodeError:
-        pass
 
     check_label(label)
     label_bytes = _alabel_prefix + _punycode(label)
