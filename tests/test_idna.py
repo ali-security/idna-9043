@@ -104,7 +104,7 @@ class IDNATests(unittest.TestCase):
         import codecs
         import time
 
-        import idna.codec  # noqa: F401  (register the idna2008 codec)
+        import idna.codec  # register the idna2008 codec
 
         payload = "・" * 8000 + "漢"
         start = time.perf_counter()
