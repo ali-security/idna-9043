@@ -187,7 +187,7 @@ library data against Unicode 9.0.0.
 * **Packages**. The latest tagged release version is published in the
   [Python Package Index](https://pypi.org/project/idna/).
 
-* **Version support**. This library supports Python 3.8 and higher.
+* **Version support**. This library supports Python 3.9 and higher.
   As this library serves as a low-level toolkit for a variety of
   applications, many of which strive for broad compatibility with older
   Python versions, there is no rush to remove older interpreter support.

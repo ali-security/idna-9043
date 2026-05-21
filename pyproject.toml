@@ -19,7 +19,6 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -32,7 +31,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Utilities",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version"]
 
 [project.urls]
@@ -76,6 +75,3 @@ ignore = [
     # `__all__` lists __version__ first by convention; otherwise sorted.
     "RUF022",       # unsorted-dunder-all
 ]
-[tool.ruff.lint.pyupgrade]
-# Honour the project's Python 3.8 floor when applying pyupgrade rules.
-keep-runtime-typing = true
