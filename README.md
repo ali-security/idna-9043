@@ -1,31 +1,13 @@
 # Internationalized Domain Names in Applications (IDNA)
 
-Support for [Internationalized Domain Names in
-Applications (IDNA)](https://tools.ietf.org/html/rfc5891)
-and [Unicode IDNA Compatibility Processing](https://unicode.org/reports/tr46/).
+Support for [Internationalized Domain Names in Applications
+(IDNA)](https://tools.ietf.org/html/rfc5891) and [Unicode IDNA
+Compatibility Processing](https://unicode.org/reports/tr46/). It
+supersedes the standard library's `encodings.idna`, which only
+implements the 2003 specification, offering broader script coverage and
+limiting domains with known security vulnerabilities.
 
-The latest versions of these standards supplied here provide
-more comprehensive language coverage and reduce the potential of
-allowing domains with known security vulnerabilities. This library
-is a suitable replacement for the "encodings.idna"
-module that comes with the Python standard library, but which
-only supports an older superseded IDNA specification from 2003.
-
-Basic functions are simply executed:
-
-```pycon
->>> import idna
->>> idna.encode('ドメイン.テスト')
-b'xn--eckwd4c7c.xn--zckzah'
->>> print(idna.decode('xn--eckwd4c7c.xn--zckzah'))
-ドメイン.テスト
-```
-
-
-## Installation
-
-This package is available for installation from PyPI via the
-typical mechanisms, such as:
+Available from [PyPI](https://pypi.org/project/idna/), for example:
 
 ```bash
 $ python3 -m pip install idna
@@ -66,10 +48,9 @@ conversion operations. This functionality, known as a
 specification to be a local user-interface issue distinct from IDNA
 conversion functionality.
 
-For example, "Königsgäßchen" is not a permissible label as *LATIN
-CAPITAL LETTER K* is not allowed (nor are capital letters in general).
-UTS 46 will convert this into lower case prior to applying the IDNA
-conversion.
+For example, "Königsgäßchen" is not a permissible label as capital letters
+are not allowed. UTS 46 will convert this into lower case prior to applying
+the IDNA conversion.
 
 ```pycon
 >>> import idna
@@ -81,6 +62,20 @@ b'xn--knigsgchen-b4a3dun'
 >>> print(idna.decode('xn--knigsgchen-b4a3dun'))
 königsgäßchen
 ```
+
+
+## Exceptions
+
+All errors raised during conversion derive from the `idna.IDNAError`
+base class. The more specific exceptions are:
+
+* `idna.IDNABidiError` — raised when a label contains an illegal
+  combination of left-to-right and right-to-left characters.
+* `idna.InvalidCodepoint` — raised when a label contains a codepoint
+  that is INVALID for IDNA.
+* `idna.InvalidCodepointContext` — raised when a CONTEXTO or CONTEXTJ
+  codepoint appears in a position whose contextual requirements are
+  not satisfied.
 
 
 ## Command-line tool
@@ -102,25 +97,15 @@ With no mode flag the direction is chosen automatically: inputs
 containing an `xn--` label are decoded, anything else is encoded. Pass
 `-e`/`--encode` or `-d`/`--decode` to force a specific direction.
 
-Multiple domains may be supplied at once, either as positional
-arguments or by piping one domain per line on standard input:
-
-```bash
-$ idna пример.рф παράδειγμα
-xn--e1afmkfd.xn--p1ai
-xn--hxajbheg2az3al
-$ cat domainlist.txt | idna
-```
-
-When more than one domain is supplied without a mode flag, the
-direction is picked from the first input and that mode is applied to
-every remaining input, so a stream of A-labels all decode and a stream
-of U-labels all encode. Pass `-e`/`--encode` or `-d`/`--decode` to
+Multiple domains may be supplied at once, either as positional arguments
+or by piping one domain per line on standard input. When more than
+one domain is supplied without explicitly asking to encode or decode,
+the direction is picked from the first input and that mode is applied
+to every remaining input. Use `-e`/`--encode` or `-d`/`--decode` to
 override the heuristic if the first input is ambiguous.
 
 UTS #46 mapping is applied by default, which lets the tool accept
-inputs that aren't strictly valid IDNA 2008 — such as uppercase
-letters — by normalising them first:
+inputs that aren't strictly valid IDNA 2008 by normalising them first:
 
 ```bash
 $ idna ΠΑΡΆΔΕΙΓΜΑ.ΕΛ
@@ -135,57 +120,7 @@ offending input; processing continues with the remaining domains and
 the tool exits with a non-zero status if any conversion failed.
 
 
-## Exceptions
-
-All errors raised during the conversion following the specification
-should raise an exception derived from the `idna.IDNAError` base
-class.
-
-More specific exceptions that may be generated as `idna.IDNABidiError`
-when the error reflects an illegal combination of left-to-right and
-right-to-left characters in a label; `idna.InvalidCodepoint` when
-a specific codepoint is an illegal character in an IDN label (i.e.
-INVALID); and `idna.InvalidCodepointContext` when the codepoint is
-illegal based on its position in the string (i.e. it is CONTEXTO or CONTEXTJ
-but the contextual requirements are not satisfied.)
-
-## Building and Diagnostics
-
-The IDNA and UTS 46 functionality relies upon pre-calculated lookup
-tables for performance. These tables are derived from computing against
-eligibility criteria in the respective standards using the command-line
-script `tools/idna-data`.
-
-This tool will fetch relevant codepoint data from the Unicode repository
-and perform the required calculations to identify eligibility. There are
-three main modes:
-
-* `idna-data make-libdata`. Generates `idnadata.py` and
-  `uts46data.py`, the pre-calculated lookup tables used for IDNA and
-  UTS 46 conversions. Implementers who wish to track this library against
-  a different Unicode version may use this tool to manually generate a
-  different version of the `idnadata.py` and `uts46data.py` files.
-
-* `idna-data make-table`. Generate a table of the IDNA disposition
-  (e.g. PVALID, CONTEXTJ, CONTEXTO) in the format found in Appendix
-  B.1 of RFC 5892 and the pre-computed tables published by [IANA](https://www.iana.org/).
-
-* `idna-data U+0061`. Prints debugging output on the various
-  properties associated with an individual Unicode codepoint (in this
-  case, U+0061), that are used to assess the IDNA and UTS 46 status of a
-  codepoint. This is helpful in debugging or analysis.
-
-The tool accepts a number of arguments, described using `idna-data -h`.
-Most notably, the `--version` argument allows the specification
-of the version of Unicode to be used in computing the table data. For
-example, `idna-data --version 9.0.0 make-libdata` will generate
-library data against Unicode 9.0.0.
-
-
 ## Additional Notes
-
-* **Packages**. The latest tagged release version is published in the
-  [Python Package Index](https://pypi.org/project/idna/).
 
 * **Version support**. This library supports Python 3.8 and higher.
   As this library serves as a low-level toolkit for a variety of
@@ -195,15 +130,11 @@ library data against Unicode 9.0.0.
   as automated tests can no longer easily be run, i.e. once the Python
   version is officially end-of-life.
 
-* **Testing**. The library has a test suite based on each rule of the
-  IDNA specification, as well as tests that are provided as part of the
-  Unicode Technical Standard 46, [Unicode IDNA Compatibility Processing](https://unicode.org/reports/tr46/).
-
 * **Emoji**. It is an occasional request to support emoji domains in
   this library. Encoding of symbols like emoji is expressly prohibited by
   the IDNA technical standard, and emoji domains are broadly phased
   out across the domain industry due to associated security risks.
 
-* **Transitional processing**. Unicode 16.0.0 removed transitional
-  processing so the `transitional` argument for the encode() method
-  no longer has any effect and will be removed at a later date.
+* **Regenerating lookup tables**. The IDNA and UTS 46 functionality
+  relies upon pre-calculated lookup tables, generated using the
+  `idna-data` script in [`tools/`](tools/README.md).
