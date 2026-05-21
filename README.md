@@ -59,8 +59,8 @@ the IDNA conversion.
 idna.core.InvalidCodepoint: Codepoint U+004B at position 1 of 'Königsgäßchen' not allowed
 >>> idna.encode('Königsgäßchen', uts46=True)
 b'xn--knigsgchen-b4a3dun'
->>> print(idna.decode('xn--knigsgchen-b4a3dun'))
-königsgäßchen
+>>> idna.decode('xn--knigsgchen-b4a3dun')
+'königsgäßchen'
 ```
 
 
