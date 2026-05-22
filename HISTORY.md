@@ -1,5 +1,14 @@
 # History
 
+## 3.16 (2026-05-22)
+
+- Add a command-line interface (`python -m idna`, also available as
+  the `idna` script). Encodes or decodes one or more domains supplied
+  as arguments or on standard input, with options to select A-label
+  or U-label output and control error handling.
+- Raise the minimum supported Python version to 3.9
+- Various code quality improvements
+
 ## 3.15 (2026-05-12)
 
 - Enforce DNS-length cap on individual labels early in `check_label`,
