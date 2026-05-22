@@ -9,6 +9,7 @@ from .intranges import intranges_contain
 
 _virama_combining_class = 9
 _alabel_prefix = b"xn--"
+_max_input_length = 1024
 _unicode_dots_re = re.compile("[\u002e\u3002\uff0e\uff61]")
 
 
@@ -104,6 +105,8 @@ def check_bidi(label: str, check_ltr: bool = False) -> bool:
     :raises IDNABidiError: If any of Bidi Rule conditions 1-6 are violated,
         or if the directional category of a codepoint cannot be determined.
     """
+    if len(label) > _max_input_length:
+        raise IDNAError("Label too long")
     # Bidi rules should only be applied if string contains RTL characters
     bidi_label = False
     for idx, cp in enumerate(label, 1):
@@ -200,6 +203,8 @@ def check_nfc(label: str) -> None:
     :param label: The label to check.
     :raises IDNAError: If ``label`` differs from its NFC normalisation.
     """
+    if len(label) > _max_input_length:
+        raise IDNAError("Label too long")
     if unicodedata.normalize("NFC", label) != label:
         raise IDNAError("Label must be in Normalization Form C")
 
@@ -218,7 +223,10 @@ def valid_contextj(label: str, pos: int) -> bool:
         ``pos`` is not a recognised joiner).
     :raises ValueError: If an adjacent codepoint has no Unicode name when
         determining its combining class.
+    :raises IDNAError: If ``label`` exceeds the defensive input length limit.
     """
+    if len(label) > _max_input_length:
+        raise IDNAError("Label too long")
     cp_value = ord(label[pos])
 
     if cp_value == 0x200C:
@@ -268,7 +276,10 @@ def valid_contexto(label: str, pos: int, exception: bool = False) -> bool:
     :returns: ``True`` if the codepoint at ``pos`` satisfies its CONTEXTO
         rule, ``False`` otherwise (including when the codepoint is not a
         recognised CONTEXTO codepoint).
+    :raises IDNAError: If ``label`` exceeds the defensive input length limit.
     """
+    if len(label) > _max_input_length:
+        raise IDNAError("Label too long")
     cp_value = ord(label[pos])
 
     if cp_value == 0x00B7:
@@ -319,6 +330,8 @@ def check_label(label: Union[str, bytes, bytearray]) -> None:
         is not valid in its context.
     :raises IDNABidiError: If the Bidi Rule is violated.
     """
+    if len(label) > _max_input_length:
+        raise IDNAError("Label too long")
     if isinstance(label, (bytes, bytearray)):
         label = label.decode("utf-8")
     if len(label) == 0:
@@ -367,6 +380,8 @@ def alabel(label: str) -> bytes:
     :raises IDNAError: If the label is invalid or the resulting A-label
         exceeds 63 octets.
     """
+    if len(label) > _max_input_length:
+        raise IDNAError("Label too long")
     try:
         label_bytes = label.encode("ascii")
     except UnicodeEncodeError:
@@ -399,6 +414,8 @@ def ulabel(label: Union[str, bytes, bytearray]) -> str:
     :returns: The U-label as a Unicode string.
     :raises IDNAError: If the label is malformed or fails validation.
     """
+    if len(label) > _max_input_length:
+        raise IDNAError("Label too long")
     if not isinstance(label, (bytes, bytearray)):
         try:
             label_bytes = label.encode("ascii")
@@ -445,7 +462,10 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
     :returns: The remapped domain, in Normalisation Form C.
     :raises InvalidCodepoint: If the domain contains a disallowed
         codepoint under the chosen rules.
+    :raises IDNAError: If ``domain`` exceeds the defensive input length limit.
     """
+    if len(domain) > _max_input_length:
+        raise IDNAError("Domain too long")
     from .uts46data import uts46data
 
     output = ""
@@ -522,6 +542,8 @@ def encode(
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("should pass a unicode string to the function rather than a byte string.") from err
+    if len(s) > _max_input_length:
+        raise IDNAError("Domain too long")
     if uts46:
         s = uts46_remap(s, std3_rules, transitional)
 
@@ -580,6 +602,8 @@ def decode(
             s = str(s, "ascii")
         except (UnicodeDecodeError, TypeError) as err:
             raise IDNAError("Invalid ASCII in A-label") from err
+    if len(s) > _max_input_length:
+        raise IDNAError("Domain too long")
     if uts46:
         s = uts46_remap(s, std3_rules, False)
     # Reject inputs that exceed the maximum DNS domain length up-front
