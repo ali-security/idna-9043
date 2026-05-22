@@ -1,6 +1,6 @@
 # History
 
-## 3.16 (unreleased)
+## 3.16 (2026-05-22)
 
 - Add a command-line interface (`python -m idna`, also available as
   the `idna` script). Encodes or decodes one or more domains supplied
