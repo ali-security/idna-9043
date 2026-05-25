@@ -557,6 +557,7 @@ def decode(
     strict: bool = False,
     uts46: bool = False,
     std3_rules: bool = False,
+    lenient: bool = False,
 ) -> str:
     """Decode an A-label-encoded domain name back to Unicode.
 
@@ -595,9 +596,15 @@ def decode(
         del labels[-1]
         trailing_dot = True
     for label in labels:
-        s = ulabel(label)
-        if s:
-            result.append(s)
+        try:
+            u = ulabel(label)
+        except IDNAError:
+            if lenient and label[:4].lower() == "xn--":
+                u = label.lower()
+            else:
+                raise
+        if u:
+            result.append(u)
         else:
             raise IDNAError("Empty label")
     if trailing_dot:
