@@ -21,8 +21,15 @@ _bidi_rtl_valid_ending = frozenset({"R", "AL", "EN", "AN"})
 _bidi_rtl_numeric = frozenset({"AN", "EN"})
 _bidi_ltr_allowed = frozenset({"L", "EN", "ES", "CS", "ET", "ON", "BN", "NSM"})
 _bidi_ltr_valid_ending = frozenset({"L", "EN"})
-_bidi_joiner_l_or_d = frozenset({ord("L"), ord("D")})
-_bidi_joiner_r_or_d = frozenset({ord("R"), ord("D")})
+_bidi_joiner_l_or_d = frozenset({"L", "D"})
+_bidi_joiner_r_or_d = frozenset({"R", "D"})
+
+
+def _joining_type(cp: int) -> Optional[str]:
+    for jt, ranges in idnadata.joining_types.items():
+        if intranges_contain(cp, ranges):
+            return jt
+    return None
 
 
 class IDNAError(UnicodeError):
@@ -235,8 +242,8 @@ def valid_contextj(label: str, pos: int) -> bool:
 
         ok = False
         for i in range(pos - 1, -1, -1):
-            joining_type = idnadata.joining_types().get(ord(label[i]))
-            if joining_type == ord("T"):
+            joining_type = _joining_type(ord(label[i]))
+            if joining_type == "T":
                 continue
             if joining_type in _bidi_joiner_l_or_d:
                 ok = True
@@ -248,8 +255,8 @@ def valid_contextj(label: str, pos: int) -> bool:
 
         ok = False
         for i in range(pos + 1, len(label)):
-            joining_type = idnadata.joining_types().get(ord(label[i]))
-            if joining_type == ord("T"):
+            joining_type = _joining_type(ord(label[i]))
+            if joining_type == "T":
                 continue
             if joining_type in _bidi_joiner_r_or_d:
                 ok = True
