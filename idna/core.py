@@ -473,17 +473,15 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
     """
     if len(domain) > _max_input_length:
         raise IDNAError("Domain too long")
-    from .uts46data import uts46data
+    from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
     output = ""
 
     for pos, char in enumerate(domain):
         code_point = ord(char)
-        uts46row = uts46data[code_point if code_point < 256 else bisect.bisect_left(uts46data, (code_point, "Z")) - 1]
-        status = uts46row[1]
-        replacement: Optional[str] = None
-        if len(uts46row) == 3:
-            replacement = uts46row[2]  # ty: ignore[index-out-of-bounds]
+        i = code_point if code_point < 256 else bisect.bisect_right(uts46_starts, code_point) - 1
+        status = chr(uts46_statuses[i])
+        replacement: Optional[str] = uts46_replacements[i]
 
         # UTS #46 §4: V is always valid, D is deviation (kept unless transitional),
         # 3 is disallowed-STD3 (kept unmapped if std3_rules is off and no mapping).
