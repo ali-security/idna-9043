@@ -599,10 +599,13 @@ def uts46_libdata(ucdata):
 
     rows = list(uts46_ranges(ucdata))
 
-    yield 'uts46_starts: "array[int]" = array("I", ('
+    yield 'uts46_starts: "array[int]" = array('
+    yield '    "I",'
+    yield "    ("
     for cp, _status, _mapping in rows:
-        yield "    0x{:X},".format(cp)
-    yield "))"
+        yield "        0x{:X},".format(cp)
+    yield "    ),"
+    yield ")"
     yield ""
 
     yield "uts46_statuses: bytes = ("
