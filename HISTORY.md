@@ -1,5 +1,14 @@
 # History
 
+## 3.17 (2026-05-28)
+
+- Substantial 75% reduction in memory usage through new data
+  structures and some optimization in processing speed.
+- Added a general 1024-character input length cap to the public
+  validation, conversion, and codec entry points. This is well above
+  any legitimate domain or label and guards against pathological
+  inputs.
+
 ## 3.16 (2026-05-22)
 
 - Add a command-line interface (`python -m idna`, also available as
