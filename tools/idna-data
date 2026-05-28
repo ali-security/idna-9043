@@ -590,13 +590,6 @@ def uts46_libdata(ucdata):
 
     yield '__version__ = "{}"\n'.format(ucdata.version)
 
-    yield "# Three parallel arrays describe the UTS #46 mapping table. Look up a"
-    yield "# codepoint by finding the row whose start is the greatest start <= the"
-    yield "# codepoint (bisect over uts46_starts). uts46_statuses[i] is the status"
-    yield "# byte ('V', 'M', 'D', 'I', 'X', or '3'); uts46_replacements[i] is the"
-    yield "# mapping target for 'M'/'D' rows, or None otherwise."
-    yield ""
-
     rows = list(uts46_ranges(ucdata))
 
     yield 'uts46_starts: "array[int]" = array('

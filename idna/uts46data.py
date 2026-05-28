@@ -8,12 +8,6 @@ from typing import Optional
 
 __version__ = "17.0.0"
 
-# Three parallel arrays describe the UTS #46 mapping table. Look up a
-# codepoint by finding the row whose start is the greatest start <= the
-# codepoint (bisect over uts46_starts). uts46_statuses[i] is the status
-# byte ('V', 'M', 'D', 'I', 'X', or '3'); uts46_replacements[i] is the
-# mapping target for 'M'/'D' rows, or None otherwise.
-
 uts46_starts: "array[int]" = array(
     "I",
     (
