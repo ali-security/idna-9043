@@ -21,8 +21,15 @@ _bidi_rtl_valid_ending = frozenset({"R", "AL", "EN", "AN"})
 _bidi_rtl_numeric = frozenset({"AN", "EN"})
 _bidi_ltr_allowed = frozenset({"L", "EN", "ES", "CS", "ET", "ON", "BN", "NSM"})
 _bidi_ltr_valid_ending = frozenset({"L", "EN"})
-_bidi_joiner_l_or_d = frozenset({ord("L"), ord("D")})
-_bidi_joiner_r_or_d = frozenset({ord("R"), ord("D")})
+_bidi_joiner_l_or_d = frozenset({"L", "D"})
+_bidi_joiner_r_or_d = frozenset({"R", "D"})
+
+
+def _joining_type(cp: int) -> Optional[str]:
+    for jt, ranges in idnadata.joining_types.items():
+        if intranges_contain(cp, ranges):
+            return jt
+    return None
 
 
 class IDNAError(UnicodeError):
@@ -235,8 +242,8 @@ def valid_contextj(label: str, pos: int) -> bool:
 
         ok = False
         for i in range(pos - 1, -1, -1):
-            joining_type = idnadata.joining_types().get(ord(label[i]))
-            if joining_type == ord("T"):
+            joining_type = _joining_type(ord(label[i]))
+            if joining_type == "T":
                 continue
             if joining_type in _bidi_joiner_l_or_d:
                 ok = True
@@ -248,8 +255,8 @@ def valid_contextj(label: str, pos: int) -> bool:
 
         ok = False
         for i in range(pos + 1, len(label)):
-            joining_type = idnadata.joining_types().get(ord(label[i]))
-            if joining_type == ord("T"):
+            joining_type = _joining_type(ord(label[i]))
+            if joining_type == "T":
                 continue
             if joining_type in _bidi_joiner_r_or_d:
                 ok = True
@@ -466,17 +473,15 @@ def uts46_remap(domain: str, std3_rules: bool = True, transitional: bool = False
     """
     if len(domain) > _max_input_length:
         raise IDNAError("Domain too long")
-    from .uts46data import uts46data
+    from .uts46data import uts46_replacements, uts46_starts, uts46_statuses
 
     output = ""
 
     for pos, char in enumerate(domain):
         code_point = ord(char)
-        uts46row = uts46data[code_point if code_point < 256 else bisect.bisect_left(uts46data, (code_point, "Z")) - 1]
-        status = uts46row[1]
-        replacement: Optional[str] = None
-        if len(uts46row) == 3:
-            replacement = uts46row[2]  # ty: ignore[index-out-of-bounds]
+        i = code_point if code_point < 256 else bisect.bisect_right(uts46_starts, code_point) - 1
+        status = chr(uts46_statuses[i])
+        replacement: Optional[str] = uts46_replacements[i]
 
         # UTS #46 §4: V is always valid, D is deviation (kept unless transitional),
         # 3 is disallowed-STD3 (kept unmapped if std3_rules is off and no mapping).
