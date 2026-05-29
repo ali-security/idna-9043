@@ -28,6 +28,19 @@ UTS46_STATUSES = {
     "disallowed": ("X", False),
 }
 
+
+def _double_quoted_repr(s):
+    """Return a Python string literal preferring double quotes (matches ruff format)."""
+    r = repr(s)
+    if r[0] == '"':
+        return r
+    # repr() picks single quotes; keep them if the string contains a double
+    # quote but no single quote (ruff format minimises escapes the same way).
+    if '"' in s and "'" not in s:
+        return r
+    inner = r[1:-1].replace("\\'", "'").replace('"', '\\"')
+    return '"' + inner + '"'
+
 # Exceptions are manually assigned in Section 2.6 of RFC 5892.
 exceptions = {
     0x00DF: "PVALID",  # LATIN SMALL LETTER SHARP S
@@ -630,7 +643,7 @@ def uts46_libdata(ucdata):
         if mapping is None:
             yield "    None,"
         else:
-            yield "    {!r},".format(mapping)
+            yield "    {},".format(_double_quoted_repr(mapping))
     yield ")"
 
 
