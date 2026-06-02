@@ -349,58 +349,58 @@ class IDNATests(unittest.TestCase):
             self.assertRaises(idna.IDNAError, idna.encode, value)
             self.assertRaises(idna.IDNAError, idna.decode, value)
 
-    def test_decode_lenient(self):
+    def test_decode_display(self):
         # A label whose Punycode decode succeeds but contains disallowed
-        # codepoints — under lenient decoding, the original A-label is kept.
+        # codepoints — under display decoding, the original A-label is kept.
         self.assertRaises(idna.IDNAError, idna.decode, "a.b.c.xn--pokxncvks")
         self.assertEqual(
-            idna.decode("a.b.c.xn--pokxncvks", lenient=True),
+            idna.decode("a.b.c.xn--pokxncvks", display=True),
             "a.b.c.xn--pokxncvks",
         )
 
         # Mixed valid/invalid labels: the valid label still decodes, the
         # invalid xn-- label is preserved verbatim.
         self.assertEqual(
-            idna.decode("xn--zckzah.xn--pokxncvks", lenient=True),
+            idna.decode("xn--zckzah.xn--pokxncvks", display=True),
             "テスト.xn--pokxncvks",
         )
 
         # A label whose Punycode itself is malformed.
         self.assertEqual(
-            idna.decode("xn--.example", lenient=True),
+            idna.decode("xn--.example", display=True),
             "xn--.example",
         )
 
         # Uppercase A-label prefix: the kept label is lowercased to match
         # what a successful ulabel() call would have returned.
         self.assertEqual(
-            idna.decode("XN--POKXNCVKS.example", lenient=True),
+            idna.decode("XN--POKXNCVKS.example", display=True),
             "xn--pokxncvks.example",
         )
 
-        # Lenient must not swallow errors for non-xn-- labels.
+        # display must not swallow errors for non-xn-- labels.
         self.assertRaises(
             idna.IDNAError,
             idna.decode,
             "-bad.example",
-            lenient=True,
+            display=True,
         )
 
-        # Lenient should be a no-op for fully valid input.
+        # display should be a no-op for fully valid input.
         self.assertEqual(
-            idna.decode("xn--zckzah.xn--zckzah", lenient=True),
+            idna.decode("xn--zckzah.xn--zckzah", display=True),
             "テスト.テスト",
         )
 
-        # Trailing dot preserved under lenient recovery.
+        # Trailing dot preserved under display recovery.
         self.assertEqual(
-            idna.decode("xn--pokxncvks.", lenient=True),
+            idna.decode("xn--pokxncvks.", display=True),
             "xn--pokxncvks.",
         )
 
         # Bytes input is supported, matching decode()'s normal contract.
         self.assertEqual(
-            idna.decode(b"a.b.c.xn--pokxncvks", lenient=True),
+            idna.decode(b"a.b.c.xn--pokxncvks", display=True),
             "a.b.c.xn--pokxncvks",
         )
 
