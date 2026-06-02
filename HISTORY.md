@@ -1,5 +1,12 @@
 # History
 
+## 3.18 (2026-06-XX)
+
+- When decoding a domain, add a `display` argument that will pass
+  through invalid labels rather than raising an exception, matching
+  the per-label recovery described by UTS #46 and the WHATWG URL
+  specification.
+
 ## 3.17 (2026-05-28)
 
 - Substantial 75% reduction in memory usage through new data
