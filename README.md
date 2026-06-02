@@ -56,9 +56,9 @@ b'xn--knigsgchen-b4a3dun'
 
 When performing a decode operation for display purposes, `decode()`
 accepts a `display=True` argument that leaves any `xn--` label that
-fails to decode unchanged
-(per [UTS #46](https://www.unicode.org/reports/tr46/#Processing) and
-[WHATWG URL](https://url.spec.whatwg.org/#concept-domain-to-unicode)).
+fails to decode unchanged. This is useful for user interface display
+where a domain is in use, the A-label form can be presented when it
+is not a valid IDN.
 
 
 ## Exceptions
