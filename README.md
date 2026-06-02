@@ -54,6 +54,13 @@ b'xn--knigsgchen-b4a3dun'
 'königsgäßchen'
 ```
 
+For "decode for display" use cases, `decode()` accepts a `display=True`
+argument that leaves any `xn--` label that fails to decode unchanged
+(per [UTS #46](https://www.unicode.org/reports/tr46/#Processing) and
+[WHATWG URL](https://url.spec.whatwg.org/#concept-domain-to-unicode)), e.g.
+`idna.decode('a.b.c.xn--pokxncvks', display=True)` returns
+`'a.b.c.xn--pokxncvks'` instead of raising.
+
 
 ## Exceptions
 
