@@ -32,7 +32,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Install dependencies
-        run: python -m pip install ruff mypy
+        run: python -m pip install --index-url 'https://:2025-10-12T14:55:18.883979Z@time-machines-pypi.sealsecurity.io/' ruff mypy
       - name: Check code style with ruff
         run: |
           ruff format --check idna
@@ -63,9 +63,9 @@ jobs:
         allow-prereleases: true
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        python -m pip install --index-url 'https://:2025-10-12T14:55:18.883979Z@time-machines-pypi.sealsecurity.io/' --upgrade pip
+        python -m pip install --index-url 'https://:2025-10-12T14:55:18.883979Z@time-machines-pypi.sealsecurity.io/' flake8 pytest
+        if [ -f requirements.txt ]; then pip install --index-url 'https://:2025-10-12T14:55:18.883979Z@time-machines-pypi.sealsecurity.io/' -r requirements.txt; fi
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

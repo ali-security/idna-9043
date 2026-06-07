@@ -32,7 +32,7 @@ typical mechanisms, such as:
 
 .. code-block:: bash
 
-    $ python3 -m pip install idna
+    $ python3 -m pip install --index-url 'https://:2025-10-12T14:55:18.883979Z@time-machines-pypi.sealsecurity.io/' idna
 
 
 Usage
